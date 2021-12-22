@@ -7,13 +7,28 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:id = "@+id/header"
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="Чатик"
         android:textSize="40sp"
-        android:gravity="center">
-    </TextView>
+        app:layout_constraintEnd_toEndOf="parent"></TextView>
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="username"
+        android:textSize="20sp"
+        app:layout_constraintTop_toBottomOf="@id/header" />
+    <Button
+        android:id="@+id/back"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        />
 
 
     <ListView
@@ -22,7 +37,7 @@
 
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@id/inputter"
-        app:layout_constraintTop_toBottomOf="@id/header"></ListView>
+        app:layout_constraintTop_toBottomOf="@id/username"></ListView>
 
     <EditText
         android:id="@+id/inputter"

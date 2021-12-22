@@ -12,6 +12,7 @@ public class WriteMsg extends Thread {
     WriteMsg(Message msg, Socket clientSocket){
         this.msg = msg;
         this.clientSocket = clientSocket;
+        start();
     }
     @Override
     public void run() {
@@ -19,9 +20,12 @@ public class WriteMsg extends Thread {
 
             try {
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-                objectOutputStream.writeObject(msg);
-                objectOutputStream.flush();
-                System.out.println("Send + " + msg.msg);
+
+                    objectOutputStream.writeObject(msg);
+                    System.out.println("Plez send " + msg.msg + " to " + msg.receiver);
+
+
+
             } catch (IOException e) {
             }
     }

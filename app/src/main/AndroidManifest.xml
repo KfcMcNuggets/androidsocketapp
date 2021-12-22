@@ -22,6 +22,9 @@
         <activity
             android:name=".Chat">
         </activity>
+        <activity
+            android:name=".PMList">
+        </activity>
 
     </application>
 

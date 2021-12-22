@@ -1,10 +1,11 @@
 package com.example.myapplication;
 
-import static com.example.myapplication.Chat.arrayAdapter;
+
 
 
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.ArrayAdapter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,18 +15,23 @@ import java.net.Socket;
 class ReadMsg extends Thread {
 
     Socket clientSocket;
-
-    ReadMsg(Socket clientSocket) {
+    User user;
+    ArrayAdapter arrayAdapter;
+    ReadMsg(Socket clientSocket, User user, ArrayAdapter arrayAdapter) {
         this.clientSocket = clientSocket;
+        this.user = user;
+        this.arrayAdapter = arrayAdapter;
+        start();
     }
 
     @Override
     public void run() {
-        System.out.println("Im reading");
-        String str;
+        System.out.println("Im reading only from" + user.getUserId());
+
 
         while (true) {
             try {
+
                 InputStream inputStream = clientSocket.getInputStream();
                 ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
                 Message messagein = (Message) objectInputStream.readObject();
@@ -36,14 +42,16 @@ class ReadMsg extends Thread {
 
                         @Override
                         public void run() {
-                            Chat.messages.add(message);
+                            user.addMessage(message);
                             arrayAdapter.notifyDataSetChanged();
                         }
                     });
 //
                 }
             } catch (Exception e) {
-                System.out.println("ERROR IN READING " + e);
+                System.out.println("ERROR IN READING, e =  " + e);
+                e.printStackTrace();
+                System.out.println("MESSAGE = " + e.getMessage());
             }
         }
 

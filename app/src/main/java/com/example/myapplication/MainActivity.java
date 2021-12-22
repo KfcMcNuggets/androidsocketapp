@@ -24,12 +24,15 @@ public class MainActivity extends AppCompatActivity {
         setName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 String name = nameSetter.getText().toString();
+                System.out.println("SOCKET    " + clientSocket  + name);
                 if (!name.isEmpty()) {
 
                     Toast welcome = Toast.makeText(MainActivity.this, "Hello " + name + "!", Toast.LENGTH_LONG);
                     welcome.show();
-                    Intent intent = new Intent(MainActivity.this, Chat.class);
+                    new WriteMsg(new Message(name, "hello server", "server"), clientSocket);
+                    Intent intent = new Intent(MainActivity.this, PMList.class);
                     intent.putExtra("userName", name);
                     startActivity(intent);
                     finish();
