@@ -18,15 +18,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class PMList extends AppCompatActivity {
 
     static ArrayList<User> users = new ArrayList<>();
-    static UserAdapter userAdapter;
+    private UserAdapter userAdapter;
+    static HashMap<String, Chat> chatsAdapters = new HashMap<>();
 
-    @Override
+        @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+       System.out.println(Thread.currentThread());
         setContentView(R.layout.pm_list);
         TextView username = findViewById(R.id.username);
         Bundle args = getIntent().getExtras();
@@ -36,13 +39,13 @@ public class PMList extends AppCompatActivity {
         ListView usersList = findViewById(R.id.users);
         userAdapter = new UserAdapter(this, R.layout.user, users);
         usersList.setAdapter(userAdapter);
-        new UsersListReader(users, userAdapter);
+        new GlobalListener(users, userAdapter, this);
         usersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 Intent intent = new Intent(PMList.this, Chat.class);
-                intent.putExtra("user", users.get(position));
-//                intent.putExtra("reader", reader);
+                intent.putExtra("user", position);
                 intent.putExtra("userName", you);
                 startActivity(intent);
             }
@@ -52,7 +55,14 @@ public class PMList extends AppCompatActivity {
     }
 
 
-
+    public void updateAdapter(){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                userAdapter.notifyDataSetChanged();
+            }
+        });
+    }
 
 
 

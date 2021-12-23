@@ -1,51 +1,50 @@
 package com.example.myapplication;
 
 import static com.example.myapplication.MainActivity.clientSocket;
-
+import static com.example.myapplication.PMList.chatsAdapters;
+import static com.example.myapplication.PMList.users;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class UsersListReader extends Thread implements Serializable {
+public class GlobalListener extends Thread implements Serializable {
 
     ArrayList<User> users;
     UserAdapter userAdapter;
-    ItsTimeToUpdateAdapter time;
-    ArrayAdapter arrayAdapter;
-    User user;
+    PMList pmlist;
 
-    UsersListReader(ArrayList<User> users, UserAdapter userAdapter) {
+    GlobalListener(ArrayList<User> users, UserAdapter userAdapter, PMList pmList) {
         this.users = users;
         this.userAdapter = userAdapter;
+        this.pmlist = pmList;
         start();
     }
 
-    UsersListReader() {
 
-    }
 
-    public void setTimer(ItsTimeToUpdateAdapter time, ArrayAdapter arrayAdapter, User user) {
-        this.time = time;
-        this.arrayAdapter = arrayAdapter;
-        this.user = user;
-    }
 
     @Override
     public void run() {
         while (true) {
             try {
                 InputStream inputStream = clientSocket.getInputStream();
-                System.out.println("Handle new userlist");
+                System.out.println("Handle new object");
+                System.out.println("SIZE at begin " + userAdapter.getCount());
                 ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-                users.clear();
+
                 Object object = objectInputStream.readObject();
+                //
                 try {
                     ArrayList<User> downloadedUsers = (ArrayList<User>) object;
+                    System.out.println("this is userlist");
+                    System.out.println("SIZE superold " + userAdapter.getCount());
+                    users.clear();
                     users.addAll(downloadedUsers);
                     System.out.println("Get user list " + users);
 
@@ -53,8 +52,9 @@ public class UsersListReader extends Thread implements Serializable {
 
                         @Override
                         public void run() {
-
+                            System.out.println("SIZE old" + userAdapter.getCount());
                             userAdapter.notifyDataSetChanged();
+                            System.out.println("SIZE " + userAdapter.getCount());
                             System.out.println("Rewrite adapter");
                         }
                     });
@@ -63,18 +63,41 @@ public class UsersListReader extends Thread implements Serializable {
                 } catch (Exception e) {
                     System.out.println("ITS NOT USERSLIST" + e);
                     try {
+                        System.out.println("SIZE before creating message" + userAdapter.getCount());
                         System.out.println("Im in message writer inside reader ");
                         System.out.println("stream" + objectInputStream);
                         Message messagein = (Message) object;
+                        System.out.println("SIZE after creating message" + userAdapter.getCount());
                         System.out.println("streamread" + messagein);
                         System.out.println("after new object message");
                         String message = messagein.sender + "> " + messagein.msg;
+                        String userId = messagein.receiver;
                         System.out.println(message);
                         if (!message.isEmpty()) {
-                            System.out.println("He he message");
-                            user.addMessage(message);
-                            time.timeIsCome();
+                            System.out.println("He-he gotcha message to " + userId);
+                            System.out.println("SIZE before add message" + userAdapter.getCount());
+                            for (User user : users) {
+                                if (user.getUserId().equals(userId)) {
+                                    user.addMessage(message);
+                                    System.out.println("SIZE after creating message" + userAdapter.getCount());
+                                }
+                            }
+
+                                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (chatsAdapters.get(userId) != null) {
+                                            chatsAdapters.get(userId).updateArundapter();
+                                        }
+                                    }
+                                });
+
                         }
+
+
+
+
+
                     } catch (Exception g) {
                         System.out.println("ERROR IN READING, e =  " + g);
                         e.printStackTrace();

@@ -27,7 +27,7 @@ public class User implements Serializable {
     }
 
     public void addMessage(String msg){
-        pmMessages.add(msg);
+        this.pmMessages.add(msg);
     }
 
     public ArrayList<String> getPmMessages(){
