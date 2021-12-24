@@ -45,7 +45,7 @@ public class Chat extends AppCompatActivity {
         receiver.setText(user.getUsername());
         inputText = findViewById(R.id.inputter);
         ListView messagesList = findViewById(R.id.messages);
-        System.out.println("PM MESS " + user.getPmMessages());
+        System.out.println("PM MESS " + user.getPmMessages().size());
         arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, user.getPmMessages());
         messagesList.setAdapter(arrayAdapter);
         send = (Button) findViewById(R.id.send);
@@ -78,17 +78,18 @@ public class Chat extends AppCompatActivity {
 
     }
 
-    public Thread getThread(){
-        return thread;
-    }
+//  //  public Thread getThread(){
+//        return thread;
+//    }
 
 
-    public void updateArundapter(String senderId, String message){
+    public synchronized void updateArundapter(String senderId, String message){
 
         for (User user : users) {
             if (user.getUserId().equals(senderId)) {
                 System.out.println(message + "     " + Thread.currentThread());
                 user.addMessage(message);
+                System.out.println("add message to list = " + user.getUsername() + " length = " + user.getPmMessages().size());
 
             }
         }

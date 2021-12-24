@@ -28,8 +28,7 @@ public class GlobalListener extends Thread implements Serializable {
         start();
     }
 
-
-
+    int i = 6;
 
     @Override
     public void run() {
@@ -37,62 +36,106 @@ public class GlobalListener extends Thread implements Serializable {
             try {
                 InputStream inputStream = mySocket.getInputStream();
                 ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-                Object object = objectInputStream.readObject();
 
-                try {
-                    ArrayList<User> downloadedUsers = (ArrayList<User>) object;
-                    users.clear();
-                    users.addAll(downloadedUsers);
+                Object object = (Object) objectInputStream.readObject();
 
-                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                System.out.println("NEW TRED ==== " + i++);
+                Thread thread = new Thread() {
 
-                        @Override
-                        public void run() {
-                            System.out.println("SIZE old" + userAdapter.getCount());
-                            userAdapter.notifyDataSetChanged();
-                            System.out.println("SIZE " + userAdapter.getCount());
-                            System.out.println("Rewrite adapter");
-                        }
-                    });
-                    //
-
-                } catch (Exception e) {
-    System.out.println("THI IS MESSAGE");
-                    try {
-
-                        Message messagein = (Message) object;
-
-                        String message = messagein.sender + "> " + messagein.msg;
-                        String senderId = messagein.senderId;
-
-                        if (!message.isEmpty()) {
-
-
-                                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (chatsAdapters.get(senderId) != null) {
-                                            chatsAdapters.get(senderId).updateArundapter(senderId, message);
-                                        }
-                                    }
-                                });
-
-                        }
+                    @Override
+                    public void run() {
 
 
 
+                        System.out.println("TRED " + Thread.currentThread());
+                        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                            @Override
+                            public void run() {
+                                readObject(object);
+                            }
+                        });
+
+}
+                };
+                thread.start();
 
 
-                    } catch (Exception g) {
-                        System.out.println("ERROR IN READING, e =  " + g);
-                        e.printStackTrace();
-                        System.out.println("MESSAGE = " + g.getMessage());
-                    }
-                }
             } catch (Exception a) {
-                System.out.println("all is in cunt");
+                System.out.println("Global problem with input" + a);
+            } catch (Error e) {
+                e.printStackTrace();
             }
         }
+    }
+
+    public void readMessage(Object object) {
+        try {
+
+
+            Message messagein = (Message) object;
+
+            String message = messagein.sender + "> " + messagein.msg;
+            String senderId = messagein.senderId;
+            System.out.println("THe message is = " + message);
+            if (!message.isEmpty()) {
+
+
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public synchronized void run() {
+                        if (chatsAdapters.get(senderId) != null) {
+                            chatsAdapters.get(senderId).updateArundapter(senderId, message);
+                        } else {
+                            System.out.println("adapter is null, just add message without updating adapter");
+                            for (User user : users) {
+                                if (user.getUserId().equals(senderId)) {
+                                    System.out.println(message + "     " + Thread.currentThread());
+                                    user.addMessage(message);
+                                    System.out.println("add message to list = " + user.getUsername());
+
+                                }
+                            }
+                        }
+                    }
+                });
+
+            } else {
+                System.out.println("SRY ITS EMPTY");
+            }
+
+
+        } catch (Exception g) {
+            System.out.println("ERROR IN READING, e =  " + g);
+            g.printStackTrace();
+            System.out.println("MESSAGE = " + g.getMessage());
+        }
+    }
+
+    public synchronized void readObject(Object object) {
+        try {
+
+            ArrayList<User> downloadedUsers = (ArrayList<User>) object;
+            users.clear();
+            users.addAll(downloadedUsers);
+
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+
+                @Override
+                public void run() {
+                    System.out.println("SIZE old" + userAdapter.getCount());
+                    userAdapter.notifyDataSetChanged();
+                    System.out.println("SIZE " + userAdapter.getCount());
+                    System.out.println("Rewrite adapter");
+                }
+            });
+
+
+        } catch (Exception e) {
+            System.out.println("THI IS MESSAGE");
+            readMessage(object);
+        }
+
+
     }
 }
 
