@@ -8,8 +8,10 @@
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="40sp"
+        android:textSize="20sp"
+        android:gravity="center"
         android:textColor="@color/black"
+        app:layout_constraintTop_toBottomOf="@id/username"
         android:text="Choose partner to chat"/>
     <TextView
         android:id = "@+id/username"
@@ -17,7 +19,7 @@
         android:layout_height="wrap_content"
         android:text="username"
         android:textSize="20sp"
-        app:layout_constraintTop_toBottomOf="@id/header"
+
         android:gravity="center"/>
 
 

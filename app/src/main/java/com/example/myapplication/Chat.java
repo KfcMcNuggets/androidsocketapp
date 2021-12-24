@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
-import static com.example.myapplication.MainActivity.clientSocket;
+import static com.example.myapplication.SuperUser.myId;
+import static com.example.myapplication.SuperUser.mySocket;
+import static com.example.myapplication.SuperUser.name;
 import static com.example.myapplication.PMList.chatsAdapters;
 import static com.example.myapplication.PMList.users;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,7 +25,7 @@ public class Chat extends AppCompatActivity {
 
     ArrayAdapter<String> arrayAdapter;
     EditText inputText;
-    String username;
+
     Button send;
     Thread thread;
 
@@ -34,11 +36,11 @@ public class Chat extends AppCompatActivity {
         this.thread =  Thread.currentThread();
         System.out.println(thread);
         Bundle args = getIntent().getExtras();
-        username = args.get("userName").toString();
+
         User user = users.get((int) args.get("user"));
         String userId = user.getUserId();
         System.out.println("CREATED USER + " + user.getUsername());
-        System.out.println(clientSocket.getInetAddress());
+        System.out.println(mySocket.getInetAddress());
         TextView receiver = findViewById(R.id.username);
         receiver.setText(user.getUsername());
         inputText = findViewById(R.id.inputter);
@@ -65,7 +67,8 @@ public class Chat extends AppCompatActivity {
                 user.addMessage("You> " + msg);
                 String receiver = user.getUserId();
                 arrayAdapter.notifyDataSetChanged();
-                new WriteMsg(new Message(username,msg, receiver), clientSocket);
+
+                new WriteMsg(new Message(name, myId , msg, receiver), mySocket);
                 inputText.setText("");
             }
         });
@@ -80,11 +83,18 @@ public class Chat extends AppCompatActivity {
     }
 
 
-    public void updateArundapter(){
+    public void updateArundapter(String senderId, String message){
 
+        for (User user : users) {
+            if (user.getUserId().equals(senderId)) {
+                System.out.println(message + "     " + Thread.currentThread());
+                user.addMessage(message);
+
+            }
+        }
             try {
                 arrayAdapter.notifyDataSetChanged();
-                System.out.println("adapter updated");
+                System.out.println("adapter updated " + Thread.currentThread());
             }catch(Exception chatNotExist){
                 System.out.println("Chat is not exist yet" + chatNotExist);
             }

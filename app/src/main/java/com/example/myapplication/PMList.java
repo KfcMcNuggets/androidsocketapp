@@ -1,7 +1,9 @@
 package com.example.myapplication;
 
 
-import static com.example.myapplication.MainActivity.clientSocket;
+import static com.example.myapplication.SuperUser.myId;
+import static com.example.myapplication.SuperUser.mySocket;
+import static com.example.myapplication.SuperUser.name;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,9 +34,8 @@ public class PMList extends AppCompatActivity {
        System.out.println(Thread.currentThread());
         setContentView(R.layout.pm_list);
         TextView username = findViewById(R.id.username);
-        Bundle args = getIntent().getExtras();
-        String you = args.get("userName").toString();
-        username.setText("You: " + you);
+
+        username.setText("You: " + name + "(" + myId + ")");
         System.out.println("im here");
         ListView usersList = findViewById(R.id.users);
         userAdapter = new UserAdapter(this, R.layout.user, users);
@@ -46,7 +47,7 @@ public class PMList extends AppCompatActivity {
 
                 Intent intent = new Intent(PMList.this, Chat.class);
                 intent.putExtra("user", position);
-                intent.putExtra("userName", you);
+
                 startActivity(intent);
             }
         });

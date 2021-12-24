@@ -18,15 +18,16 @@ public class WriteMsg extends Thread {
     public void run() {
 
 
+        for (Integer i = 0; i<1000; i++) {
             try {
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-
-                    objectOutputStream.writeObject(msg);
-                    System.out.println("Plez send " + msg.msg + " to " + msg.receiver);
-
+                msg.msg = "ddos" + i  ;
+                objectOutputStream.writeObject(msg);
+                System.out.println("Plez send " + msg.msg + " to " + msg.receiver);
 
 
             } catch (IOException e) {
             }
+        }
     }
 }
