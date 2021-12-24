@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements GetterId {
         setContentView(R.layout.main_activity);
         new SocketConnecter().start();
         EditText nameSetter = findViewById(R.id.nameSetter);
-        Button setName =findViewById(R.id.setName);
+        Button setName = findViewById(R.id.setName);
         setName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity implements GetterId {
                                 ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
                                 myId = (String) objectInputStream.readObject();
                                 MainActivity.this.registrate();
-                            }catch (Exception e){
+                            } catch (Exception e){
                                 System.out.println("FAILED IN GETTING ID " + e);
                             }
 

@@ -72,10 +72,6 @@ public class Chat extends AppCompatActivity {
                 inputText.setText("");
             }
         });
-
-
-
-
     }
 
 //  //  public Thread getThread(){

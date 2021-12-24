@@ -14,10 +14,12 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class GlobalListener extends Thread implements Serializable {
-
     ArrayList<User> users;
+    ReentrantLock users_mutex = new ReentrantLock();
+    ReentrantLock usersAdapter_mutex = new ReentrantLock();
     UserAdapter userAdapter;
     PMList pmlist;
 
@@ -45,8 +47,6 @@ public class GlobalListener extends Thread implements Serializable {
                     @Override
                     public void run() {
 
-
-
                         System.out.println("TRED " + Thread.currentThread());
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
@@ -54,7 +54,6 @@ public class GlobalListener extends Thread implements Serializable {
                                 readObject(object);
                             }
                         });
-
 }
                 };
                 thread.start();
@@ -70,16 +69,12 @@ public class GlobalListener extends Thread implements Serializable {
 
     public void readMessage(Object object) {
         try {
-
-
             Message messagein = (Message) object;
 
             String message = messagein.sender + "> " + messagein.msg;
             String senderId = messagein.senderId;
             System.out.println("THe message is = " + message);
             if (!message.isEmpty()) {
-
-
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public synchronized void run() {
@@ -92,13 +87,11 @@ public class GlobalListener extends Thread implements Serializable {
                                     System.out.println(message + "     " + Thread.currentThread());
                                     user.addMessage(message);
                                     System.out.println("add message to list = " + user.getUsername());
-
                                 }
                             }
                         }
                     }
                 });
-
             } else {
                 System.out.println("SRY ITS EMPTY");
             }
@@ -113,29 +106,29 @@ public class GlobalListener extends Thread implements Serializable {
 
     public synchronized void readObject(Object object) {
         try {
-
             ArrayList<User> downloadedUsers = (ArrayList<User>) object;
+            users_mutex.lock();
             users.clear();
             users.addAll(downloadedUsers);
+            users_mutex.unlock();
 
             new Handler(Looper.getMainLooper()).post(new Runnable() {
 
                 @Override
                 public void run() {
+                    usersAdapter_mutex.lock();
                     System.out.println("SIZE old" + userAdapter.getCount());
                     userAdapter.notifyDataSetChanged();
                     System.out.println("SIZE " + userAdapter.getCount());
                     System.out.println("Rewrite adapter");
+                    usersAdapter_mutex.unlock();
                 }
             });
-
 
         } catch (Exception e) {
             System.out.println("THI IS MESSAGE");
             readMessage(object);
         }
-
-
     }
 }
 
