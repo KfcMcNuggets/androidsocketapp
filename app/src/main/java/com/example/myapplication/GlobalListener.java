@@ -18,8 +18,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class GlobalListener extends Thread implements Serializable {
     ArrayList<User> users;
-    ReentrantLock users_mutex = new ReentrantLock();
-    ReentrantLock usersAdapter_mutex = new ReentrantLock();
+//    ReentrantLock users_mutex = new ReentrantLock();
+//    ReentrantLock usersAdapter_mutex = new ReentrantLock();
     UserAdapter userAdapter;
     PMList pmlist;
 
@@ -41,22 +41,22 @@ public class GlobalListener extends Thread implements Serializable {
 
                 Object object = (Object) objectInputStream.readObject();
 
-                System.out.println("NEW TRED ==== " + i++);
-                Thread thread = new Thread() {
-
-                    @Override
-                    public void run() {
-
-                        System.out.println("TRED " + Thread.currentThread());
+//                System.out.println("NEW TRED ==== " + i++);
+//                Thread thread = new Thread() {
+//
+//                    @Override
+//                    public void run() {
+//
+//                        System.out.println("TRED " + Thread.currentThread());
                         new Handler(Looper.getMainLooper()).post(new Runnable() {
                             @Override
                             public void run() {
                                 readObject(object);
                             }
                         });
-}
-                };
-                thread.start();
+
+//                };
+//                thread.start();
 
 
             } catch (Exception a) {
@@ -107,21 +107,21 @@ public class GlobalListener extends Thread implements Serializable {
     public synchronized void readObject(Object object) {
         try {
             ArrayList<User> downloadedUsers = (ArrayList<User>) object;
-            users_mutex.lock();
+//            users_mutex.lock();
             users.clear();
             users.addAll(downloadedUsers);
-            users_mutex.unlock();
+//            users_mutex.unlock();
 
             new Handler(Looper.getMainLooper()).post(new Runnable() {
 
                 @Override
                 public void run() {
-                    usersAdapter_mutex.lock();
+//                    usersAdapter_mutex.lock();
                     System.out.println("SIZE old" + userAdapter.getCount());
                     userAdapter.notifyDataSetChanged();
                     System.out.println("SIZE " + userAdapter.getCount());
                     System.out.println("Rewrite adapter");
-                    usersAdapter_mutex.unlock();
+//                    usersAdapter_mutex.unlock();
                 }
             });
 

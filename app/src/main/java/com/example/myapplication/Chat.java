@@ -67,9 +67,11 @@ public class Chat extends AppCompatActivity {
                 user.addMessage("You> " + msg);
                 String receiver = user.getUserId();
                 arrayAdapter.notifyDataSetChanged();
+//                for (int i = 0; i < 100; i++) {
+                    new WriteMsg(new Message(name, myId, msg, receiver), mySocket);
+//                }
+                    inputText.setText("");
 
-                new WriteMsg(new Message(name, myId , msg, receiver), mySocket);
-                inputText.setText("");
             }
         });
     }

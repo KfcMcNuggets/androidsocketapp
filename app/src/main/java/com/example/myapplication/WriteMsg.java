@@ -12,21 +12,27 @@ public class WriteMsg extends Thread {
     WriteMsg(Message msg, Socket clientSocket){
         this.msg = msg;
         this.clientSocket = clientSocket;
+        System.out.println("created");
         start();
     }
     @Override
     public void run() {
 
-    int counter = 0;
-        //for (Integer i = 0; i < 100; i++) {
-            try {
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-                objectOutputStream.writeObject(msg);
-                System.out.println("Plez send " + msg.msg + " to " + msg.receiver);
-                counter++;
-            } catch (IOException e) {
-            }
-        System.out.println("SENDED MESSAGES:  " + counter);
-        //}
+System.out.println("Started sending");
+
+//            for(int i = 0; i < 100; i++) {
+                try {
+                    System.out.println("tryin");
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+                    System.out.println("sendin");
+                    objectOutputStream.writeObject(msg);
+
+                    System.out.println("Plez send " + msg.msg + " to " + msg.receiver);
+
+                } catch (IOException e) {
+                    System.out.println("AAAAAAAAAAAA" + e);
+                }
+//            }
+
     }
 }
