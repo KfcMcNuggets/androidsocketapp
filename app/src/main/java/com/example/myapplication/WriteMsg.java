@@ -20,7 +20,7 @@ public class WriteMsg extends Thread {
 
 System.out.println("Started sending");
 
-//            for(int i = 0; i < 100; i++) {
+          for(int i = 0; i < 1; i++) {
                 try {
                     System.out.println("tryin");
                     ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
@@ -32,7 +32,7 @@ System.out.println("Started sending");
                 } catch (IOException e) {
                     System.out.println("AAAAAAAAAAAA" + e);
                 }
-//            }
+            }
 
     }
 }

@@ -68,7 +68,7 @@ public class Chat extends AppCompatActivity {
                 String receiver = user.getUserId();
                 arrayAdapter.notifyDataSetChanged();
 //                for (int i = 0; i < 100; i++) {
-                    new WriteMsg(new Message(name, myId, msg, receiver), mySocket);
+                    new WriteMsg(new Crypter(name, myId, msg, receiver).cryptMessage(), mySocket);
 //                }
                     inputText.setText("");
 

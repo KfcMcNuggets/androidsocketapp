@@ -69,8 +69,8 @@ public class GlobalListener extends Thread implements Serializable {
 
     public void readMessage(Object object) {
         try {
-            Message messagein = (Message) object;
-
+            Message cryptedMessage = (Message) object;
+            Message messagein = new Crypter(cryptedMessage.sender, cryptedMessage.senderId, cryptedMessage.msg, cryptedMessage.receiver).decryptMessage();
             String message = messagein.sender + "> " + messagein.msg;
             String senderId = messagein.senderId;
             System.out.println("THe message is = " + message);
