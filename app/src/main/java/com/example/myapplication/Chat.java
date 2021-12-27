@@ -5,11 +5,9 @@ import static com.example.myapplication.SuperUser.mySocket;
 import static com.example.myapplication.SuperUser.name;
 import static com.example.myapplication.PMList.chatsAdapters;
 import static com.example.myapplication.PMList.users;
-import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,15 +15,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.net.Socket;
-import java.util.ArrayList;
-
 public class Chat extends AppCompatActivity {
-    //ArrayList<String>messages = new ArrayList<>();
 
     ArrayAdapter<String> arrayAdapter;
     EditText inputText;
-
     Button send;
     Thread thread;
 
@@ -36,7 +29,6 @@ public class Chat extends AppCompatActivity {
         this.thread =  Thread.currentThread();
         System.out.println(thread);
         Bundle args = getIntent().getExtras();
-
         User user = users.get((int) args.get("user"));
         String userId = user.getUserId();
         System.out.println("CREATED USER + " + user.getUsername());
@@ -52,39 +44,34 @@ public class Chat extends AppCompatActivity {
         Button back = findViewById(R.id.back);
         chatsAdapters.put(userId, this);
 
-
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
+
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 System.out.println("Clicked");
                 String msg = inputText.getText().toString();
                 user.addMessage("You> " + msg);
                 String receiver = user.getUserId();
                 arrayAdapter.notifyDataSetChanged();
-//                for (int i = 0; i < 100; i++) {
-                    new WriteMsg(new Crypter(name, myId, msg, receiver).cryptMessage(), mySocket);
-//                }
-                    inputText.setText("");
+                new WriteMsg(new Crypter(name, myId, msg, receiver).cryptMessage(), mySocket);
+                inputText.setText("");
 
             }
         });
     }
 
-//  //  public Thread getThread(){
-//        return thread;
-//    }
-
-
-    public synchronized void updateArundapter(String senderId, String message){
+    public void updateArundapter(String senderId, String message){
 
         for (User user : users) {
             if (user.getUserId().equals(senderId)) {
+
                 System.out.println(message + "     " + Thread.currentThread());
                 user.addMessage(message);
                 System.out.println("add message to list = " + user.getUsername() + " length = " + user.getPmMessages().size());
@@ -100,6 +87,4 @@ public class Chat extends AppCompatActivity {
 
 
     }
-
-
 }

@@ -1,63 +1,45 @@
 package com.example.myapplication;
 
-import static com.example.myapplication.SuperUser.myId;
 import static com.example.myapplication.SuperUser.mySocket;
-import static com.example.myapplication.SuperUser.name;
 import static com.example.myapplication.PMList.chatsAdapters;
-import static com.example.myapplication.PMList.users;
 import android.os.Handler;
 import android.os.Looper;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
-
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class GlobalListener extends Thread implements Serializable {
+
     ArrayList<User> users;
-//    ReentrantLock users_mutex = new ReentrantLock();
-//    ReentrantLock usersAdapter_mutex = new ReentrantLock();
     UserAdapter userAdapter;
     PMList pmlist;
 
     GlobalListener(ArrayList<User> users, UserAdapter userAdapter, PMList pmList) {
+
         this.users = users;
         this.userAdapter = userAdapter;
         this.pmlist = pmList;
         start();
     }
 
-    int i = 6;
+
 
     @Override
     public void run() {
         while (true) {
+
             try {
                 InputStream inputStream = mySocket.getInputStream();
                 ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
-
                 Object object = (Object) objectInputStream.readObject();
 
-//                System.out.println("NEW TRED ==== " + i++);
-//                Thread thread = new Thread() {
-//
-//                    @Override
-//                    public void run() {
-//
-//                        System.out.println("TRED " + Thread.currentThread());
-                        new Handler(Looper.getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-                                readObject(object);
-                            }
-                        });
-
-//                };
-//                thread.start();
-
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        readObject(object);
+                    }
+                });
 
             } catch (Exception a) {
                 System.out.println("Global problem with input" + a);
@@ -69,12 +51,15 @@ public class GlobalListener extends Thread implements Serializable {
 
     public void readMessage(Object object) {
         try {
+
             Message cryptedMessage = (Message) object;
             Message messagein = new Crypter(cryptedMessage.sender, cryptedMessage.senderId, cryptedMessage.msg, cryptedMessage.receiver).decryptMessage();
             String message = messagein.sender + "> " + messagein.msg;
             String senderId = messagein.senderId;
             System.out.println("THe message is = " + message);
+
             if (!message.isEmpty()) {
+
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public synchronized void run() {
@@ -92,6 +77,7 @@ public class GlobalListener extends Thread implements Serializable {
                         }
                     }
                 });
+
             } else {
                 System.out.println("SRY ITS EMPTY");
             }
@@ -104,24 +90,21 @@ public class GlobalListener extends Thread implements Serializable {
         }
     }
 
-    public synchronized void readObject(Object object) {
+    public void readObject(Object object) {
         try {
             ArrayList<User> downloadedUsers = (ArrayList<User>) object;
-//            users_mutex.lock();
             users.clear();
             users.addAll(downloadedUsers);
-//            users_mutex.unlock();
 
             new Handler(Looper.getMainLooper()).post(new Runnable() {
 
                 @Override
                 public void run() {
-//                    usersAdapter_mutex.lock();
+
                     System.out.println("SIZE old" + userAdapter.getCount());
                     userAdapter.notifyDataSetChanged();
                     System.out.println("SIZE " + userAdapter.getCount());
                     System.out.println("Rewrite adapter");
-//                    usersAdapter_mutex.unlock();
                 }
             });
 
