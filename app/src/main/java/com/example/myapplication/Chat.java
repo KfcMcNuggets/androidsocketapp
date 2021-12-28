@@ -8,6 +8,7 @@ import static com.example.myapplication.PMList.users;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -21,16 +22,20 @@ public class Chat extends AppCompatActivity {
     EditText inputText;
     Button send;
     Thread thread;
+    String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Log.d("CYCLE", "CREATE " + savedInstanceState);
+        PMList.listener.getActivity(this);
         setContentView(R.layout.chat_activity);
         this.thread =  Thread.currentThread();
         System.out.println(thread);
         Bundle args = getIntent().getExtras();
         User user = users.get((int) args.get("user"));
-        String userId = user.getUserId();
+        userId = user.getUserId();
         System.out.println("CREATED USER + " + user.getUsername());
         System.out.println(mySocket.getInetAddress());
         TextView receiver = findViewById(R.id.username);
@@ -47,7 +52,7 @@ public class Chat extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                quit();
             }
         });
 
@@ -66,6 +71,19 @@ public class Chat extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed();
+        System.out.println("Back pressed");
+        quit();
+    }
+
+    public void quit(){
+        chatsAdapters.remove(userId);
+        finish();
+    }
+
 
     public void updateArundapter(String senderId, String message){
 
@@ -87,4 +105,28 @@ public class Chat extends AppCompatActivity {
 
 
     }
+
+    @Override
+    public void onPostResume() {
+        super.onPostResume();
+        Log.d("CYCLE", "POST RESUME");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("CYCLE", "RESUME");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d("CYCLE", "STOP");
+    }
+    @Override
+    public void onDestroy() {
+        PMList.listener.killChat();
+        super.onDestroy();
+    }
+
 }
